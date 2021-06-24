@@ -7,6 +7,8 @@ import bcrypt from 'bcrypt';
 
 import jwt from 'jsonwebtoken'
 
+import authConfig from '../../../config/auth.json';
+
 export class MongoUsersRepository implements IUsersRepository {
   private mongooseConn;
   private user;
@@ -74,7 +76,7 @@ export class MongoUsersRepository implements IUsersRepository {
     const userCreated: User = await this.user.create(user);
 
     if (userCreated) {
-      const token = jwt.sign({ id: userCreated.id }, '9db4965ed71f81402b9f340d8a24b5c6', { expiresIn: 86400 });
+      const token = jwt.sign({ id: userCreated.id }, authConfig.secret, { expiresIn: 86400 });
       const userAuthenticated: UserAuthenticated = new UserAuthenticated({ user: userCreated, token})
       
       return userAuthenticated;

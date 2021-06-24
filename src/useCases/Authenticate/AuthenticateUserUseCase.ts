@@ -3,6 +3,8 @@ import { IAuthenticateUserDTO } from "./AuthenticateUserDTO";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+import authConfig from '../../config/auth.json';
+
 export class AuthenticateUserUseCase {
   constructor(private usersRepository: IUsersRepository) {}
 
@@ -18,7 +20,9 @@ export class AuthenticateUserUseCase {
       throw new Error('Incorrect Password');
     }
 
-    const token = jwt.sign({ id: userFound.id }, '9db4965ed71f81402b9f340d8a24b5c6', { expiresIn: 86400 });
+    console.log('[authConfig' , authConfig)
+
+    const token = jwt.sign({ id: userFound.id }, authConfig.secret, { expiresIn: 86400 });
 
     return { user: userFound, token }
   }
