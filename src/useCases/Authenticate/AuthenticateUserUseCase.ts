@@ -20,8 +20,6 @@ export class AuthenticateUserUseCase {
       throw new Error('Incorrect Password');
     }
 
-    console.log('[authConfig' , authConfig)
-
     const token = jwt.sign({ id: userFound.id }, authConfig.secret, { expiresIn: 86400 });
 
     return { user: userFound, token }
