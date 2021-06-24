@@ -1,8 +1,7 @@
 # DB CARD
-
 ## DB CARD - API
 
-Aplicação backend em NodeJS
+Aplicação backend em NodeJS utilizando Typescript
 
 ## Pré-requisitos
 - NodeJS
