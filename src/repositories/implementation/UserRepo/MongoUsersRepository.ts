@@ -60,12 +60,13 @@ export class MongoUsersRepository implements IUsersRepository {
 
   async findByEmail(email: string, isAuthMethod?: boolean): Promise<User> {
     if (isAuthMethod) {
-      const userWithPassword = await this.user.findOne({ email }).select('+password');
+      const userWithPassword = await this.user.findOne({ email }, { _id: 0 }).select('+password');
       return userWithPassword;
     }
     // Select para incluir o campo password
     // const bdUser = await this.user.findOne({ email }).select('+password');
     const bdUser = await this.user.findOne({ email });
+    console.log('[bdUser', bdUser)
     return bdUser;
   };
 
@@ -73,7 +74,7 @@ export class MongoUsersRepository implements IUsersRepository {
     const hash = await bcrypt.hash(user.password, 10);
     user.password = hash;
     
-    const userCreated: User = await this.user.create(user);
+    const userCreated: User = await this.user.create(user).select('-_id');
 
     if (userCreated) {
       const token = jwt.sign({ id: userCreated.id }, authConfig.secret, { expiresIn: 86400 });

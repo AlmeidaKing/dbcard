@@ -19,7 +19,7 @@ export class CreateUserUseCase {
 
     const user = new User(data);
     const userCreatedAndAuthenticate = await this.usersRepository.save(user);
-
+    
     return userCreatedAndAuthenticate;
 
     // this.mailProvider.sendMail({
