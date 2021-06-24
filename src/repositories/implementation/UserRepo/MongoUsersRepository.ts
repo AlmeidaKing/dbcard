@@ -1,8 +1,11 @@
-import { User } from "../../entities/User";
-import { IUsersRepository } from "../IUsersRepository";
+import { User } from "../../../entities/User";
+import { UserAuthenticated } from "../../../entities/UserAuthenticated";
+import { IUsersRepository } from "../../IUsersRepository";
 
-import mongoose, { Model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
+
+import jwt from 'jsonwebtoken'
 
 export class MongoUsersRepository implements IUsersRepository {
   private mongooseConn;
@@ -25,6 +28,10 @@ export class MongoUsersRepository implements IUsersRepository {
 
   async setSchema() {
     const UserSchema: Schema = new Schema({
+      id: {
+        type: String,
+        unique: true,
+      },
       name: {
         type: String,
         required: true,
@@ -60,10 +67,17 @@ export class MongoUsersRepository implements IUsersRepository {
     return bdUser;
   };
 
-  async save(user: User): Promise<void> {
+  async save(user: User): Promise<UserAuthenticated> {
     const hash = await bcrypt.hash(user.password, 10);
     user.password = hash;
     
-    await this.user.create(user);
+    const userCreated: User = await this.user.create(user);
+
+    if (userCreated) {
+      const token = jwt.sign({ id: userCreated.id }, '9db4965ed71f81402b9f340d8a24b5c6', { expiresIn: 86400 });
+      const userAuthenticated: UserAuthenticated = new UserAuthenticated({ user: userCreated, token})
+      
+      return userAuthenticated;
+    }
   }
 }

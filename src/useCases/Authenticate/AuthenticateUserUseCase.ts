@@ -4,9 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export class AuthenticateUserUseCase {
-  constructor(
-    private usersRepository: IUsersRepository,
-  ) {}
+  constructor(private usersRepository: IUsersRepository) {}
 
   async execute(data: IAuthenticateUserDTO) {
     const { email, password } = data;

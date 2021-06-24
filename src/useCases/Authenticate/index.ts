@@ -1,8 +1,8 @@
-import { MongoUsersRepository } from '../../repositories/implementation/MongoUsersRepository';
+import { mongoDb } from '../../repositories/implementation/UserRepo';
 import { AuthenticateUserController } from './AuthenticateUserController';
 import { AuthenticateUserUseCase } from './AuthenticateUserUseCase';
 
-const mongoUsersRepository = new MongoUsersRepository();
+const mongoUsersRepository = mongoDb;
 
 const authenticateUserUseCase = new AuthenticateUserUseCase(mongoUsersRepository);
 

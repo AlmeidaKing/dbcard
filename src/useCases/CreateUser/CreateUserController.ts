@@ -8,14 +8,15 @@ export class CreateUserController {
 
     try {
       if (name && email && password) {
-        await this.createUsersUseCase.execute({
+        const userCreatedAndAuthenticate = await this.createUsersUseCase.execute({
           name,
           email,
           password,
         });
 
         return response.status(201).json({
-          message: "User created sucessfully."
+          message: "User created sucessfully.",
+          ...userCreatedAndAuthenticate
         });
       }
 

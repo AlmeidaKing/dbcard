@@ -6,7 +6,7 @@ import { ICreateUserRequestDTO } from "./CreateUserDTO";
 export class CreateUserUseCase {
   constructor(
     private usersRepository: IUsersRepository,
-    private mailProvider: IMailProvider, 
+    // private mailProvider: IMailProvider, 
   ) {}
   
   async execute(data: ICreateUserRequestDTO) {
@@ -18,7 +18,9 @@ export class CreateUserUseCase {
     }
 
     const user = new User(data);
-    await this.usersRepository.save(user);
+    const userCreatedAndAuthenticate = await this.usersRepository.save(user);
+
+    return userCreatedAndAuthenticate;
 
     // this.mailProvider.sendMail({
     //   to: {
