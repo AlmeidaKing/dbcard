@@ -12,3 +12,8 @@ in the format `yyyy-mm-dd`.
 ### Added
 
 - id field in mongodb user schema (available from user "jonathan17" upwards)
+- Authenticated User model
+
+### Fix
+
+- MongoDB problem when runing AuthenticateUserUseCase and CreateUserUseCase
