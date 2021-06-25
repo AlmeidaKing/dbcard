@@ -11,7 +11,9 @@ export class AuthenticateUserController {
       
       return response.status(200).json({ message: 'Authentication successful', ...user });
     } catch(err) {
-      throw new Error('err.message');
+      return response.status(400).json({
+        message: err.message || "Unexpected error.",
+      });
     }
   }
 }

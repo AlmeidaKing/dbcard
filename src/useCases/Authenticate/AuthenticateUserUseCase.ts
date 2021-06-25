@@ -12,6 +12,7 @@ export class AuthenticateUserUseCase {
     const { email, password } = data;
     const userFound = await this.usersRepository.findByEmail(email, true);
 
+    
     if (!userFound) {
       throw new Error('User not found');
     }

@@ -7,7 +7,7 @@ const mongoUsersRepository = mongoDb;
 const mailtrapMailProvider = new MailtrapMailProvider();
 
 // const createUserUseCase = new CreateUserUseCase(mongoUsersRepository, mailtrapMailProvider);
-const createUserUseCase = new CreateUserUseCase(mongoUsersRepository);
+const createUserUseCase = new CreateUserUseCase(mongoUsersRepository, mailtrapMailProvider);
 
 const createUserController = new CreateUserController(createUserUseCase);
 
