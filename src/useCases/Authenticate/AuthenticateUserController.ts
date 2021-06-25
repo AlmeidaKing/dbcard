@@ -8,8 +8,8 @@ export class AuthenticateUserController {
     const { email, password } = request.body;
     try {
       const user = await this.authenticateUserUseCase.execute({ email, password });
-      console.log('[user', user)
-      return response.status(200).json(user);
+      
+      return response.status(200).json({ message: 'Authentication successful', ...user });
     } catch(err) {
       throw new Error('err.message');
     }

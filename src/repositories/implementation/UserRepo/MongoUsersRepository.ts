@@ -1,5 +1,4 @@
 import { User } from "../../../entities/User";
-import { UserAuthenticated } from "../../../entities/UserAuthenticated";
 import { IUsersRepository } from "../../IUsersRepository";
 
 import mongoose, { Schema } from 'mongoose';
@@ -66,21 +65,28 @@ export class MongoUsersRepository implements IUsersRepository {
     // Select para incluir o campo password
     // const bdUser = await this.user.findOne({ email }).select('+password');
     const bdUser = await this.user.findOne({ email });
-    console.log('[bdUser', bdUser)
+    
     return bdUser;
   };
 
-  async save(user: User): Promise<UserAuthenticated> {
+  async save(user: User): Promise<any> {
     const hash = await bcrypt.hash(user.password, 10);
     user.password = hash;
     
-    const userCreated: User = await this.user.create(user).select('-_id');
-
+    const userCreated = await this.user.create(user);
+    
     if (userCreated) {
+      //  Aqui o usuário criado se torna um usuário autenticado
+      //  que é devolvido ao front com o token gerado
       const token = jwt.sign({ id: userCreated.id }, authConfig.secret, { expiresIn: 86400 });
-      const userAuthenticated: UserAuthenticated = new UserAuthenticated({ user: userCreated, token})
+
+      let user = {};
+
+      Object.keys(userCreated._doc).map(k => {
+        if (k !== '_id') user[k] = userCreated[k];
+      })
       
-      return userAuthenticated;
+      return { user, token };
     }
   }
 }
