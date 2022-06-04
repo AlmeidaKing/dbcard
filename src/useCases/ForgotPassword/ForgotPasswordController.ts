@@ -11,9 +11,9 @@ export class ForgotPasswordController {
 
       return response.status(200).json({ message: "Found user", ...user });
     } catch (err) {
-        return response.status(400).json({
-            message: err.message || "User not found"
-        })
+      return response.status(400).json({
+        message: err.message || "User not found",
+      });
     }
   }
 }

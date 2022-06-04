@@ -1,12 +1,18 @@
+import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+// entities
 import { User } from "../../../entities/User";
+
+// interfaces
 import { IUsersRepository } from "../../IUsersRepository";
 
-import mongoose, { Schema } from 'mongoose';
-import bcrypt from 'bcrypt';
+// config
+import authConfig from "../../../config/auth.json";
 
-import jwt from 'jsonwebtoken'
-
-import authConfig from '../../../config/auth.json';
+// utils
+import { filterProps } from "../../../utils/filterProps";
 
 export class MongoUsersRepository implements IUsersRepository {
   private mongooseConn;
@@ -17,12 +23,16 @@ export class MongoUsersRepository implements IUsersRepository {
   }
 
   async connectToUserRepo() {
-    this.mongooseConn = await mongoose.connect("mongodb://localhost/dbcard-database", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-    });
+    this.mongooseConn = await mongoose.connect(
+      "mongodb://localhost/dbcard-database",
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      }
+    );
     this.mongooseConn.Promise = global.Promise;
+    mongoose.set("useFindAndModify", false);
 
     await this.setSchema();
   }
@@ -46,49 +56,82 @@ export class MongoUsersRepository implements IUsersRepository {
       password: {
         type: String,
         required: true,
-        select: false
+        select: false,
+      },
+      passwordResetToken: {
+        type: String,
+        select: false,
+      },
+      passwordResetExpires: {
+        type: Date,
+        select: false,
       },
       createdAt: {
         type: Date,
         default: Date.now,
-      }
+      },
     });
 
-    this.user = this.mongooseConn.model('User', UserSchema);
+    this.user = this.mongooseConn.model("User", UserSchema);
+  }
+
+  removeMongoId(user: User): any {
+    const filteredUser = filterProps(user, ["_id"]);
+
+    return filteredUser;
   }
 
   async findByEmail(email: string, isAuthMethod?: boolean): Promise<User> {
     if (isAuthMethod) {
-      const userWithPassword = await this.user.findOne({ email }, { _id: 0 }).select('+password')
+      const userWithPassword = await this.user
+        .findOne({ email }, { _id: 0 })
+        .select("+password");
 
       return userWithPassword;
-      }
+    }
 
     // Select para incluir o campo password
     // const bdUser = await this.user.findOne({ email }).select('+password');
     const bdUser = await this.user.findOne({ email });
-    
-    return bdUser;
-  };
+
+    return this.removeMongoId(bdUser["_doc"]);
+  }
 
   async save(user: User): Promise<any> {
     const hash = await bcrypt.hash(user.password, 10);
     user.password = hash;
-    
+
     const userCreated = await this.user.create(user);
-    
+
     if (userCreated) {
       //  Aqui o usuário criado se torna um usuário autenticado
       //  que é devolvido ao front com o token gerado
-      const token = jwt.sign({ id: userCreated.id }, authConfig.secret, { expiresIn: 86400 });
-
-      let user = {};
-
-      Object.keys(userCreated._doc).map(k => {
-        if (k !== '_id') user[k] = userCreated[k];
+      const token = jwt.sign({ id: userCreated.id }, authConfig.secret, {
+        expiresIn: 86400,
       });
-      
+
+      const user = this.removeMongoId(userCreated);
+
       return { user, token };
     }
+  }
+
+  async updateForgotPassword(
+    id: string,
+    resetToken: string,
+    resetExpires: Date
+  ) {
+    const findAndUpdateUser = await this.user
+      .findOneAndUpdate(
+        { id },
+        {
+          passwordResetToken: resetToken,
+          passwordResetExpires: resetExpires,
+        }
+      )
+      .select("+passwordResetToken")
+      .select("+passwordResetExpires");
+
+    return { user: findAndUpdateUser };
   }
 }
