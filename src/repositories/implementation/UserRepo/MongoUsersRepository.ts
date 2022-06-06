@@ -92,12 +92,14 @@ export class MongoUsersRepository implements IUsersRepository {
 
     // Select para incluir o campo password
     // const bdUser = await this.user.findOne({ email }).select('+password');
-    const bdUser = await this.user.findOne({ email });
+    const bdUser = await this.user
+      .findOne({ email })
+      .select("+passwordResetToken +passwordResetExpires");
 
     return this.removeMongoId(bdUser["_doc"]);
   }
 
-  async save(user: User): Promise<any> {
+  async save(user: User): Promise<{ user: User; token: string }> {
     const hash = await bcrypt.hash(user.password, 10);
     user.password = hash;
 
@@ -121,17 +123,30 @@ export class MongoUsersRepository implements IUsersRepository {
     resetToken: string,
     resetExpires: Date
   ) {
-    const findAndUpdateUser = await this.user
-      .findOneAndUpdate(
-        { id },
-        {
-          passwordResetToken: resetToken,
-          passwordResetExpires: resetExpires,
-        }
-      )
-      .select("+passwordResetToken")
-      .select("+passwordResetExpires");
+    const config = {
+      passwordResetToken: resetToken,
+      passwordResetExpires: resetExpires,
+    };
+    const findAndUpdateUser = await this.user.findOneAndUpdate(
+      { id },
+      { ...config }
+    );
 
-    return { user: findAndUpdateUser };
+    const newUser = { ...findAndUpdateUser["_doc"], ...config };
+
+    return { user: newUser };
+  }
+
+  async resetPassword(id: string, password: string): Promise<any> {
+    const hash = await bcrypt.hash(password, 10);
+
+    const newPasswordUser = await this.user.findOneAndUpdate(
+      {
+        id,
+      },
+      { password: hash }
+    );
+
+    return { user: newPasswordUser };
   }
 }

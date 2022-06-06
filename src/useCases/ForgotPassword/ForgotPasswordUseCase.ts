@@ -1,10 +1,10 @@
 import { IUsersRepository } from "../../repositories/IUsersRepository";
-import { ForgotPasswordDTO } from "./ForgotPasswordDTO";
+import { IForgotPasswordDTO } from "./ForgotPasswordDTO";
 import crypto from "crypto";
 
 export class ForgotPasswordUseCase {
   constructor(private userRepository: IUsersRepository) {}
-  async execute(data: ForgotPasswordDTO) {
+  async execute(data: IForgotPasswordDTO) {
     const { email } = data;
 
     const userFound = await this.userRepository.findByEmail(email);
