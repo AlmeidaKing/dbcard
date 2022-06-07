@@ -7,4 +7,5 @@ export interface IUsersRepository {
     resetToken: string,
     resetExpires: Date
   ): Promise<any>;
+  resetPassword(id: string, password: string): Promise<User>;
 }

@@ -6,6 +6,8 @@ export class User {
   public name: string;
   public email: string;
   public password: string;
+  public passwordResetToken?: string;
+  public passwordResetExpires?: Date;
 
   constructor(props: User) {
     Object.assign(this, props);

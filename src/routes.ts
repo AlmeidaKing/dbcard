@@ -6,6 +6,7 @@ import { middlewareAuth } from "./middlewares/Auth/AuthMiddleware";
 import { createUserController } from "./useCases/CreateUser";
 import { authenticateUserController } from "./useCases/Authenticate";
 import { forgotPasswordController } from "./useCases/ForgotPassword";
+import { resetPasswordController } from "./useCases/ResetPassword";
 
 const router = Router();
 
@@ -21,6 +22,9 @@ router.post("/user/forgot-password", async (req, res) => {
   return forgotPasswordController.handle(req, res);
 });
 
+router.post("/user/reset-password", async (req, res) => {
+  return resetPasswordController.handle(req, res);
+});
 
 router.post("/authenticate", async (req, res) => {
   return authenticateUserController.handle(req, res);
