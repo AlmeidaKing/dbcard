@@ -9,6 +9,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.12",
     "nodemailer": "^6.6.1",
+    "supertest": "^6.2.3",
     "uuidv4": "^6.2.8"
   },
   "scripts": {

@@ -7,6 +7,7 @@ import { createUserController } from "./useCases/CreateUser";
 import { authenticateUserController } from "./useCases/Authenticate";
 import { forgotPasswordController } from "./useCases/ForgotPassword";
 import { resetPasswordController } from "./useCases/ResetPassword";
+import { deleteUserController } from "./useCases/DeleteUser";
 
 const router = Router();
 
@@ -24,6 +25,10 @@ router.post("/user/forgot-password", async (req, res) => {
 
 router.post("/user/reset-password", async (req, res) => {
   return resetPasswordController.handle(req, res);
+});
+
+router.delete("/user/delete", async (req, res) => {
+  return deleteUserController.handle(req, res);
 });
 
 router.post("/authenticate", async (req, res) => {
