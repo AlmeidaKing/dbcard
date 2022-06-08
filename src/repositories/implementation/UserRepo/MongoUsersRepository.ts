@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model, Mongoose } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -15,8 +15,8 @@ import authConfig from "../../../config/auth.json";
 import { filterProps } from "../../../utils/filterProps";
 
 export class MongoUsersRepository implements IUsersRepository {
-  private mongooseConn;
-  private user;
+  private mongooseConn: Mongoose;
+  private user: Model<User>;
 
   constructor() {
     this.connectToUserRepo();
@@ -38,7 +38,7 @@ export class MongoUsersRepository implements IUsersRepository {
   }
 
   async setSchema() {
-    const UserSchema: Schema = new Schema({
+    const UserSchema = new Schema<User>({
       id: {
         type: String,
         unique: true,
@@ -90,12 +90,11 @@ export class MongoUsersRepository implements IUsersRepository {
       return userWithPassword;
     }
 
-    // Select para incluir o campo password
-    // const bdUser = await this.user.findOne({ email }).select('+password');
     const bdUser = await this.user
       .findOne({ email })
       .select("+passwordResetToken +passwordResetExpires");
 
+    console.log("[bdUser]", bdUser, email);
     return this.removeMongoId(bdUser["_doc"]);
   }
 
@@ -148,5 +147,11 @@ export class MongoUsersRepository implements IUsersRepository {
     );
 
     return { user: newPasswordUser };
+  }
+
+  async deleteUser(email: string): Promise<any> {
+    const deletedUser = await this.user.deleteOne({ email });
+
+    return { user: deletedUser };
   }
 }

@@ -8,4 +8,5 @@ export interface IUsersRepository {
     resetExpires: Date
   ): Promise<any>;
   resetPassword(id: string, password: string): Promise<User>;
+  deleteUser(email: string): Promise<any>;
 }
