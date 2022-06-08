@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model, Mongoose } from "mongoose";
+import mongoose, { Schema, Model, Mongoose, LeanDocument } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../../../entities/User";
 
 // interfaces
-import { IUsersRepository } from "../../IUsersRepository";
+import { DeleteUserResponse, IUsersRepository } from "../../IUsersRepository";
 
 // config
 import authConfig from "../../../config/auth.json";
@@ -81,21 +81,25 @@ export class MongoUsersRepository implements IUsersRepository {
     return filteredUser;
   }
 
-  async findByEmail(email: string, isAuthMethod?: boolean): Promise<User> {
+  async findByEmail(
+    email: string,
+    isAuthMethod?: boolean
+  ): Promise<LeanDocument<User> | null> {
     if (isAuthMethod) {
       const userWithPassword = await this.user
         .findOne({ email }, { _id: 0 })
-        .select("+password");
+        .select("+password")
+        .lean();
 
       return userWithPassword;
     }
 
     const bdUser = await this.user
       .findOne({ email })
-      .select("+passwordResetToken +passwordResetExpires");
+      .select("+passwordResetToken +passwordResetExpires")
+      .lean();
 
-    console.log("[bdUser]", bdUser, email);
-    return this.removeMongoId(bdUser["_doc"]);
+    return bdUser;
   }
 
   async save(user: User): Promise<{ user: User; token: string }> {
@@ -111,9 +115,9 @@ export class MongoUsersRepository implements IUsersRepository {
         expiresIn: 86400,
       });
 
-      const user = this.removeMongoId(userCreated);
+      const newUser = this.removeMongoId(userCreated);
 
-      return { user, token };
+      return newUser ? { user: newUser["_doc"], token } : null;
     }
   }
 
@@ -121,37 +125,38 @@ export class MongoUsersRepository implements IUsersRepository {
     id: string,
     resetToken: string,
     resetExpires: Date
-  ) {
+  ): Promise<LeanDocument<User>> {
     const config = {
       passwordResetToken: resetToken,
       passwordResetExpires: resetExpires,
     };
-    const findAndUpdateUser = await this.user.findOneAndUpdate(
-      { id },
-      { ...config }
-    );
+    const findAndUpdateUser = await this.user
+      .findOneAndUpdate({ id }, { ...config })
+      .lean();
 
-    const newUser = { ...findAndUpdateUser["_doc"], ...config };
+    const newUser = { ...findAndUpdateUser, ...config };
 
-    return { user: newUser };
+    return newUser;
   }
 
-  async resetPassword(id: string, password: string): Promise<any> {
+  async resetPassword(
+    id: string,
+    password: string
+  ): Promise<LeanDocument<User> | null> {
     const hash = await bcrypt.hash(password, 10);
 
-    const newPasswordUser = await this.user.findOneAndUpdate(
-      {
-        id,
-      },
-      { password: hash }
-    );
+    const newPasswordUser = await this.user
+      .findOneAndUpdate({ id }, { password: hash })
+      .lean();
 
-    return { user: newPasswordUser };
+    return newPasswordUser;
   }
 
-  async deleteUser(email: string): Promise<any> {
-    const deletedUser = await this.user.deleteOne({ email });
+  async deleteUser(
+    email: string
+  ): Promise<LeanDocument<DeleteUserResponse> | null> {
+    const deletedUser = await this.user.deleteOne({ email }).lean();
 
-    return { user: deletedUser };
+    return deletedUser.deletedCount ? deletedUser : null;
   }
 }

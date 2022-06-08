@@ -6,33 +6,33 @@ import { ICreateUserRequestDTO } from "./CreateUserDTO";
 export class CreateUserUseCase {
   constructor(
     private usersRepository: IUsersRepository,
-    private mailProvider: IMailProvider, 
+    private mailProvider: IMailProvider
   ) {}
-  
+
   async execute(data: ICreateUserRequestDTO) {
     const { email } = data;
     const userAlreadyExists = await this.usersRepository.findByEmail(email);
 
     if (userAlreadyExists) {
-      throw new Error('User already exists.')
+      throw new Error("User already exists.");
     }
 
     const user = new User(data);
-    
+
     const userCreatedAndAuthenticate = await this.usersRepository.save(user);
 
     this.mailProvider.sendMail({
       to: {
         email: data.email,
-        name: data.name
+        name: data.name,
       },
       from: {
-        email: 'teste@dbcard.com',
-        name: 'DB CARD',
+        email: "teste@dbcard.com",
+        name: "DB CARD",
       },
-      subject: 'Seja bem-vindo!',
-      body: `Olá, ${data.name}. Obrigador por criar sua conta!`
-    })
+      subject: "Seja bem-vindo!",
+      body: `Olá, ${data.name}. Obrigador por criar sua conta!`,
+    });
 
     return userCreatedAndAuthenticate;
   }
