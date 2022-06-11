@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
+import { Request, Response } from 'express';
+import { AuthenticateUserUseCase } from './AuthenticateUserUseCase';
 
 export class AuthenticateUserController {
   constructor(private authenticateUserUseCase: AuthenticateUserUseCase) {}
@@ -13,10 +13,10 @@ export class AuthenticateUserController {
 
       return response
         .status(200)
-        .json({ message: "Authentication successful", ...user });
+        .json({ message: 'Authentication successful', ...user });
     } catch (err) {
       return response.status(400).json({
-        message: err.message || "Unexpected error",
+        message: err.message || 'Unexpected error',
       });
     }
   }

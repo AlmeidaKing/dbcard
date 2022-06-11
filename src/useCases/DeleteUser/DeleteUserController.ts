@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { DeleteUserUseCase } from "./DeleteUserUseCase";
+import { Request, Response } from 'express';
+import { DeleteUserUseCase } from './DeleteUserUseCase';
 
 export class DeleteUserController {
   constructor(private deleteUserUseCase: DeleteUserUseCase) {}
@@ -10,12 +10,12 @@ export class DeleteUserController {
       const user = await this.deleteUserUseCase.execute({ email });
 
       return response.status(200).json({
-        message: "User deleted",
+        message: 'User deleted',
         user,
       });
     } catch (err) {
       return response.status(400).json({
-        message: err.message || "User not deleted",
+        message: err.message || 'User not deleted',
       });
     }
   }

@@ -1,5 +1,5 @@
-import { User } from "../entities/User";
-import { LeanDocument } from "mongoose";
+import { User } from '../entities/User';
+import { LeanDocument } from 'mongoose';
 
 export type DeleteUserResponse = {
   n?: number;

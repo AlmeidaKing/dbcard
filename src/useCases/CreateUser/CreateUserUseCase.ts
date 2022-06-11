@@ -1,7 +1,7 @@
-import { User } from "../../entities/User";
-import { IMailProvider } from "../../providers/IMailProvider";
-import { IUsersRepository } from "../../repositories/IUsersRepository";
-import { ICreateUserRequestDTO } from "./CreateUserDTO";
+import { User } from '../../entities/User';
+import { IMailProvider } from '../../providers/IMailProvider';
+import { IUsersRepository } from '../../repositories/IUsersRepository';
+import { ICreateUserRequestDTO } from './CreateUserDTO';
 
 export class CreateUserUseCase {
   constructor(
@@ -14,7 +14,7 @@ export class CreateUserUseCase {
     const userAlreadyExists = await this.usersRepository.findByEmail(email);
 
     if (userAlreadyExists) {
-      throw new Error("User already exists.");
+      throw new Error('User already exists.');
     }
 
     const user = new User(data);
@@ -27,10 +27,10 @@ export class CreateUserUseCase {
         name: data.name,
       },
       from: {
-        email: "teste@dbcard.com",
-        name: "DB CARD",
+        email: 'teste@dbcard.com',
+        name: 'DB CARD',
       },
-      subject: "Seja bem-vindo!",
+      subject: 'Seja bem-vindo!',
       body: `Olá, ${data.name}. Obrigador por criar sua conta!`,
     });
 

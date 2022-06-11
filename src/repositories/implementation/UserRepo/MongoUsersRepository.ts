@@ -1,18 +1,18 @@
-import mongoose, { Schema, Model, Mongoose, LeanDocument } from "mongoose";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import mongoose, { Schema, Model, Mongoose, LeanDocument } from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // entities
-import { User } from "../../../entities/User";
+import { User } from '../../../entities/User';
 
 // interfaces
-import { DeleteUserResponse, IUsersRepository } from "../../IUsersRepository";
+import { DeleteUserResponse, IUsersRepository } from '../../IUsersRepository';
 
 // config
-import authConfig from "../../../config/auth.json";
+import authConfig from '../../../config/auth.json';
 
 // utils
-import { filterProps } from "../../../utils/filterProps";
+import { filterProps } from '../../../utils/filterProps';
 
 export class MongoUsersRepository implements IUsersRepository {
   private mongooseConn: Mongoose;
@@ -24,7 +24,7 @@ export class MongoUsersRepository implements IUsersRepository {
 
   async connectToUserRepo() {
     this.mongooseConn = await mongoose.connect(
-      "mongodb://localhost/dbcard-database",
+      'mongodb://localhost/dbcard-database',
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -32,7 +32,7 @@ export class MongoUsersRepository implements IUsersRepository {
       }
     );
     this.mongooseConn.Promise = global.Promise;
-    mongoose.set("useFindAndModify", false);
+    mongoose.set('useFindAndModify', false);
 
     await this.setSchema();
   }
@@ -72,11 +72,12 @@ export class MongoUsersRepository implements IUsersRepository {
       },
     });
 
-    this.user = this.mongooseConn.model("User", UserSchema);
+    this.user = this.mongooseConn.model('User', UserSchema);
   }
 
+  // eslint-disable-next-line
   removeMongoId(user: User): any {
-    const filteredUser = filterProps(user, ["_id"]);
+    const filteredUser = filterProps(user, ['_id']);
 
     return filteredUser;
   }
@@ -88,7 +89,7 @@ export class MongoUsersRepository implements IUsersRepository {
     if (isAuthMethod) {
       const userWithPassword = await this.user
         .findOne({ email }, { _id: 0 })
-        .select("+password")
+        .select('+password')
         .lean();
 
       return userWithPassword;
@@ -96,7 +97,7 @@ export class MongoUsersRepository implements IUsersRepository {
 
     const bdUser = await this.user
       .findOne({ email })
-      .select("+passwordResetToken +passwordResetExpires")
+      .select('+passwordResetToken +passwordResetExpires')
       .lean();
 
     return bdUser;
@@ -117,7 +118,7 @@ export class MongoUsersRepository implements IUsersRepository {
 
       const newUser = this.removeMongoId(userCreated);
 
-      return newUser ? { user: newUser["_doc"], token } : null;
+      return newUser ? { user: newUser['_doc'], token } : null;
     }
   }
 

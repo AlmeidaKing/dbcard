@@ -1,9 +1,9 @@
-import { IUsersRepository } from "../../repositories/IUsersRepository";
-import { IAuthenticateUserDTO } from "./AuthenticateUserDTO";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { IUsersRepository } from '../../repositories/IUsersRepository';
+import { IAuthenticateUserDTO } from './AuthenticateUserDTO';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-import authConfig from "../../config/auth.json";
+import authConfig from '../../config/auth.json';
 
 export class AuthenticateUserUseCase {
   constructor(private usersRepository: IUsersRepository) {}
@@ -13,11 +13,11 @@ export class AuthenticateUserUseCase {
     const userFound = await this.usersRepository.findByEmail(email, true);
 
     if (!userFound) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     if (!(await bcrypt.compare(password, userFound.password))) {
-      throw new Error("Incorrect Password");
+      throw new Error('Incorrect Password');
     }
 
     const token = jwt.sign({ id: userFound.id }, authConfig.secret, {

@@ -1,17 +1,17 @@
-import { IMailProvider, IMessage } from "../IMailProvider";
+import { IMailProvider, IMessage } from '../IMailProvider';
 import nodemailer from 'nodemailer';
-import Mail from "nodemailer/lib/mailer";
+import Mail from 'nodemailer/lib/mailer';
 
 export class MailtrapMailProvider implements IMailProvider {
   private transporter: Mail;
   
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: "smtp.mailtrap.io",
+      host: 'smtp.mailtrap.io',
       port: 2525,
       auth: {
-        user: "24112c46ad06d1",
-        pass: "85a95c741f07b8"
+        user: '24112c46ad06d1',
+        pass: '85a95c741f07b8'
       }
     });
   }
@@ -28,6 +28,6 @@ export class MailtrapMailProvider implements IMailProvider {
       },
       subject: message.subject,
       html: message.body
-    })
+    });
   }
 }
