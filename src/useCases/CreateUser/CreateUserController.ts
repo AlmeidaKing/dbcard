@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { CreateUserUseCase } from "./CreateUserUseCase";
+import { Request, Response } from 'express';
+import { CreateUserUseCase } from './CreateUserUseCase';
 
 export class CreateUserController {
   constructor(private createUsersUseCase: CreateUserUseCase) {}
@@ -15,17 +15,17 @@ export class CreateUserController {
         });
 
         return response.status(201).json({
-          message: "User created sucessfully.",
+          message: 'User created sucessfully.',
           ...userCreatedAndAuthenticate
         });
       }
 
       return response.status(400).json({
-        message: "Missing properties..."
-      })
+        message: 'Missing properties...'
+      });
     } catch (err) {
       return response.status(400).json({
-        message: err.message || "Unexpected error.",
+        message: err.message || 'Unexpected error.',
       });
     }
   }

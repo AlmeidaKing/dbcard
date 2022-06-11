@@ -8,4 +8,4 @@ const authenticateUserUseCase = new AuthenticateUserUseCase(mongoUsersRepository
 
 const authenticateUserController = new AuthenticateUserController(authenticateUserUseCase);
 
-export { authenticateUserUseCase, authenticateUserController }
+export { authenticateUserUseCase, authenticateUserController };

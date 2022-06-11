@@ -8,7 +8,7 @@ export class MongoConnection {
   }
 
   async connectToDB() {
-    this.mongooseConn = await mongoose.connect("mongodb://localhost/dbcard-database", {
+    this.mongooseConn = await mongoose.connect('mongodb://localhost/dbcard-database', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,

@@ -1,6 +1,6 @@
-import { IUsersRepository } from "../../repositories/IUsersRepository";
-import { IForgotPasswordDTO } from "./ForgotPasswordDTO";
-import crypto from "crypto";
+import { IUsersRepository } from '../../repositories/IUsersRepository';
+import { IForgotPasswordDTO } from './ForgotPasswordDTO';
+import crypto from 'crypto';
 
 export class ForgotPasswordUseCase {
   constructor(private userRepository: IUsersRepository) {}
@@ -10,10 +10,10 @@ export class ForgotPasswordUseCase {
     const userFound = await this.userRepository.findByEmail(email);
 
     if (!userFound) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
-    const resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    const resetPasswordToken = crypto.randomBytes(20).toString('hex');
 
     const now = new Date();
     now.setHours(now.getHours() + 1);
